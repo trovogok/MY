@@ -1,0 +1,45 @@
+а)
+CREATE TABLE physical_persons (
+    person_id SERIAL PRIMARY KEY,
+    full_Name VARCHAR(100),
+    passport_number VARCHAR(20),
+    gender CHAR(1)
+);
+CREATE TABLE addresses (
+    address_id SERIAL PRIMARY KEY,
+    person_id INT REFERENCES physical_persons(person_id),
+    city VARCHAR(100),
+    region VARCHAR(100),
+    street VARCHAR(100),
+    house_number integer,
+    apartment_number integer,
+    postal_code VARCHAR(100),
+    ifns_code VARCHAR(100),
+    okato_code VARCHAR(100)
+);
+
+б)
+INSERT INTO physical_persons(full_Name, passport_number, gender)
+VALUES ('Владимир Владимирович Сидоров','123245','М'),('Боброва Жанна Александровна','213123','Ж'),('Арсеньев Захар Леонидович','213342','М');
+
+INSERT INTO addresses (city, region, street, house_number, apartment_number, postal_code, ifns_code, okato_code)
+VALUES ('Иваново', 'Ивановская область', 'Солнечная', '20', '60', '155000', '123456789012', '123456123'),('Москва', 'Московская область', 'Пушкина', '14', '56', '101000', '383274123456','123456156'),('Казань','Республика Татарстан','Ленина', '15', '46', '420000','487274123456','896756156');
+
+в)
+SELECT house_number, COUNT(*) AS addresses 
+FROM addresses 
+WHERE house_number % 2 = 0
+GROUP BY house_number;
+
+SELECT i.full_name, r.house_number, i.passport_number
+FROM physical_persons i
+JOIN addresses r ON i.person_id = r.person_id;
+
+SELECT DISTINCT city, street, house_number
+FROM addresses 
+WHERE person_id IS NULL;
+
+SELECT DISTINCT r.postal_code, r.ifns_code, r.OKATO_code
+FROM addresses r
+WHERE r.house_number = '20' OR r.apartment_number = '60';
+

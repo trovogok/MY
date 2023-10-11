@@ -1,0 +1,55 @@
+a)
+CREATE TABLE Products(
+productID SERIAL PRIMARY KEY,
+product_name VARCHAR(255),
+unit_of_measurement VARCHAR(255),
+packaging VARCHAR(255)
+);
+
+CREATE TABLE Warehouses(
+warehouseID SERIAL PRIMARY KEY,
+country VARCHAR(255),
+specialized_equipment BOOLEAN,
+warehouse_area VARCHAR(255)
+);
+
+CREATE TABLE StockMovements(
+movementID SERIAL PRIMARY KEY,
+productID INT REFERENCES Products(productID),
+warehouseID INT REFERENCES Warehouses(warehouseID),
+movement_date DATE,
+journey BOOLEAN
+);
+
+б)
+INSERT INTO Products (product_name, unit_of_measurement, packaging)
+VALUES ('Apple', 'tons', 'Container'), ('Orange', 'tons', 'Container'), ('bananas', 'tons', 'Box');
+
+INSERT INTO Warehouses(country, specialized_equipment, warehouse_area)
+VALUES('Georgia', 'True', '10000'), ('Italy', 'False', '5000'), ('Nigeria', 'True', '23000');
+
+INSERT INTO StockMovements(productID, warehouseID, movement_date, journey)
+VALUES(1, 1, '2023-10-7', 'True'), (2, 2, '2023-09-20','True'), (3, 3, '2023-08-27', 'False');
+
+в)
+SELECT *
+FROM Warehouses
+WHERE warehouseID NOT IN (
+    SELECT DISTINCT warehouseID
+    FROM StockMovements
+    WHERE movement_date >= '2023-09-10' AND movement_date <= '2023-10-5');
+
+SELECT w.warehouseID, w.country, COUNT(sm.movementID) AS movement_count
+FROM Warehouses w
+LEFT JOIN StockMovements sm ON w.warehouseID = sm.warehouseID
+GROUP BY w.warehouseID, w.country;
+
+SELECT sm.movement_date, p.product_name, CASE WHEN sm.journey = 'True' THEN 'True' ELSE 'False' END AS journey
+FROM StockMovements sm
+JOIN Products p ON sm.productID = p.productID
+WHERE sm.warehouseID = '1' AND sm.movement_date >= '2023-10-05' AND sm.movement_date <= '2023-10-10';
+
+SELECT sm.movement_date, w.country, CASE WHEN sm.journey = 'True' THEN 'True' ELSE 'False' END AS journey
+FROM StockMovements sm
+JOIN Warehouses w ON sm.warehouseID = w.warehouseID
+WHERE sm.productID = '2' AND sm.movement_date >= '2023-09-10' AND sm.movement_date <= '2023-09-21';

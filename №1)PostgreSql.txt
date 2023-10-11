@@ -1,0 +1,48 @@
+a)
+CREATE TABLE Cars (
+    CarID SERIAL PRIMARY KEY,
+    Make VARCHAR(255),
+    Model VARCHAR(255),
+    production_year INTEGER
+);
+
+CREATE TABLE Owners (
+    OwnerID SERIAL PRIMARY KEY,
+    FirstName VARCHAR(255),
+    LastName VARCHAR(255),
+    Date_of_birtday DATE
+);
+
+CREATE TABLE CarOwnership (
+    OwnershipID SERIAL PRIMARY KEY,
+    CarID INT REFERENCES Cars(CarID),
+    OwnerID INT REFERENCES Owners(OwnerID),
+    PurchaseDate DATE
+);
+
+b)
+INSERT INTO Cars (Make, Model, production_year)
+VALUES ('Lada', 'Vesta', 2015),('Chery', 'Tiggo', 2005),('Ford', 'Kuga', 2008);
+
+INSERT INTO Owners (FirstName, LastName, Date_of_birtday)
+VALUES ('Vova', 'Vovchik', '1999-02-12'), ('Peter', 'Smirnov', '1974-10-02'), ('Kate', 'Katler', '1968-11-10');
+
+INSERT INTO CarOwnership (CarID, OwnerID, PurchaseDate)
+VALUES (1, 1, '2018-01-20'), (2, 2, '2017-05-20'), (3, 3, '2021-03-10');
+
+с)
+SELECT Owners.FirstName, Owners.LastName
+FROM Owners
+INNER JOIN CarOwnership ON Owners.OwnerID = CarOwnership.OwnerID
+WHERE CarOwnership.PurchaseDate <= '2018-01-20'
+AND CarOwnership.CarID = 1;
+
+SELECT Cars.Make, Cars.Model, Owners.FirstName, Owners.LastName
+FROM Cars
+INNER JOIN CarOwnership ON Cars.CarID = CarOwnership.CarID
+INNER JOIN Owners ON Owners.OwnerID = CarOwnership.OwnerID;
+
+SELECT Cars.Make, Cars.Model, CarOwnership.PurchaseDate
+FROM Cars
+INNER JOIN CarOwnership ON Cars.CarID = CarOwnership.CarID
+WHERE CarOwnership.OwnerID = 2;
